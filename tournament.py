@@ -67,11 +67,13 @@ def playerStandings():
     """
     DB = connect()
     c = DB.cursor()
-    c.execute("SELECT Players.name, count(Matches.Winner) as num FROM Players left join Matches on Players.id = Matches.Winner GROUP BY Players.name ORDER BY num DESC;")
-    players = [{'name': str(row[0]), 'num': str(row[1])} for row in c.fetchall()]
+    c.execute("SELECT Players.name, Players.id, count(Matches.winner = Players.id) as wins, count(Matches.loser) as matches FROM Players left join Matches on Players.id = Matches.winner OR Players.id = Matches.loser GROUP BY Players.id ORDER BY wins DESC;")
+    players = [{'id': str(row[1]), 'name': str(row[0]), 'wins': int(row[2]), 'matches': int(row[3])+int(row[2])} for row in c.fetchall()]
     DB.close()
     return players
 
+
+# SELECT Players.name, Players.id, count(Matches.loser) as matches FROM Players left join Matches WHERE Players.id = Matches.winner OR Players.id = Matches.loser GROUP BY Players.id ORDER BY wins DESC;
 
 def reportMatch(winner, loser):
     """Records the outcome of a single match between two players.
@@ -110,8 +112,8 @@ def swissPairings():
 # registerPlayer('tvb')
 # registerPlayer('donne')
 # print(countPlayers())
-# print(playerStandings())
-reportMatch(19, 20)
+print(playerStandings())
+# reportMatch(21, 20)
 # reportMatch(15, 16)
 # reportMatch(17, 18)
 # reportMatch('ciao', 'tvb')
