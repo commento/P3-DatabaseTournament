@@ -72,7 +72,7 @@ def playerStandings():
               "count(CASE WHEN Matches.winner = Players.id THEN 1 END) as wins, count(Matches.loser) as matches "
               "FROM Players left join Matches on Players.id = Matches.winner OR Players.id = Matches.loser "
               "GROUP BY Players.id ORDER BY wins DESC;")
-    players = [(str(row[1]), str(row[0]),  int(row[2]),  int(row[3])) for row in c.fetchall()] 
+    players = [(int(row[1]), str(row[0]),  int(row[2]),  int(row[3])) for row in c.fetchall()] 
     DB.close()
 
 
@@ -110,33 +110,11 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
-    DB = connect()
-    c = DB.cursor()
     count = countPlayers()
-    c.execute("SELECT a.id, a.name, b.id, b.name FROM Players as a, Players as b, Matches WHERE (not (a.id = Matches.winner AND b.id = Matches.loser OR b.id = Matches.winner AND a.id = Matches.loser) AND a.id < b.id) LIMIT (%s)/2;", (count,))
-    players = [(int(row[0]), str(row[1]), int(row[2]), str(row[3])) for row in c.fetchall()]
-    DB.close()
+    results = playerStandings()
+    l = len(results)
+    players = []
+    for i in range(0,l, 2):
+        players.append([int(results[i][0]), str(results[i][1]), int(results[i+1][0]), str(results[i+1][1])])
 
     return players
-
-# registerPlayer('player1')
-# registerPlayer('player2')
-# registerPlayer('player3')
-# registerPlayer('player4')
-# registerPlayer('player5')
-# registerPlayer('player6')
-# registerPlayer('player7')
-# registerPlayer('player8')
-# print(countPlayers())
-# deleteMatches()
-# reportMatch(98, 99)
-print(swissPairings())
-#print(playerStandings())
-# reportMatch(, 20)
-# reportMatch(15, 16)
-# reportMatch(17, 18)
-# reportMatch('ciao', 'tvb')
-# reportMatch('donne', 'ciao')
-
-# deletePlayers()
-# print(countPlayers())
