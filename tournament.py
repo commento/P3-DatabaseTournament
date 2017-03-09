@@ -67,9 +67,14 @@ def playerStandings():
     """
     DB = connect()
     c = DB.cursor()
-    c.execute("SELECT Players.name, Players.id, count(Matches.winner = Players.id) as wins, count(Matches.loser) as matches FROM Players left join Matches on Players.id = Matches.winner OR Players.id = Matches.loser GROUP BY Players.id ORDER BY wins DESC;")
-    players = [{'id': str(row[1]), 'name': str(row[0]), 'wins': int(row[2]), 'matches': int(row[3])+int(row[2])} for row in c.fetchall()]
+    c.execute("SELECT Players.name, Players.id, "
+              "count(CASE WHEN Matches.winner = Players.id THEN 1 END) as wins, count(Matches.loser) as matches "
+              "FROM Players left join Matches on Players.id = Matches.winner OR Players.id = Matches.loser "
+              "GROUP BY Players.id ORDER BY wins DESC;")
+    players = [{'id': str(row[1]), 'name': str(row[0]), 'wins': int(row[2]), 'matches': int(row[3])} for row in c.fetchall()]
     DB.close()
+
+
     return players
 
 
