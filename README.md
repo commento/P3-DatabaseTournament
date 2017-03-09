@@ -22,7 +22,7 @@ Create the Database with the commands:
 - psql in the cloned repository folder
 - CREATE DATABASE tournament;
 
-Create the Database Tables with the command:
+Create the Database Tables executing the sql file with psql running and the command:
 - \i tournament.sql
 
 
